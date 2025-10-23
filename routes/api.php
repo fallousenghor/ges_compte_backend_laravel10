@@ -1,17 +1,31 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CompteController;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
-*/
 
-Route::get("user" , fn() => "Hello User depuis api.php");
+
+// Routes d'authentification
+Route::prefix('auth')->group(function () {
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login']);
+
+    // Routes protégées
+    Route::middleware('auth:api')->group(function () {
+        Route::get('/user', [AuthController::class, 'user']);
+        Route::post('/logout', [AuthController::class, 'logout']);
+    });
+});
+
+// Routes pour les comptes (protégées)
+Route::middleware('auth:api')->prefix('comptes')->group(function () {
+    Route::apiResource('/', CompteController::class)->parameters(['' => 'id']);
+
+    Route::group(['prefix' => 'filter'], function () {
+        Route::get('/type/{type}', [CompteController::class, 'getByType'])->name('comptes.by-type');
+        Route::get('/status/{status}', [CompteController::class, 'getByStatus'])->name('comptes.by-status');
+    });
+
+    Route::get('/search/{query}', [CompteController::class, 'search'])->name('comptes.search');
+});

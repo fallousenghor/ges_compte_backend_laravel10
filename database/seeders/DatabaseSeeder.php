@@ -13,7 +13,9 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            UserSeeder::class,
+            TestUsersSeeder::class,
+            // UserSeeder::class, // Désactivé car utilise l'ancien champ 'role'
+            ClientCompteSeeder::class,
         ]);
     }
 }

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
+use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable
 {
@@ -37,9 +37,40 @@ class User extends Authenticatable
         'email',
         'telephone',
         'adresse',
-        'role',
-        'password' ,
+        'password',
     ];
+
+    /**
+     * Get the accounts owned by the user.
+     */
+    public function comptes()
+    {
+        return $this->hasMany(Compte::class);
+    }
+
+    /**
+     * Get the owning userable model.
+     */
+    public function userable()
+    {
+        return $this->morphTo();
+    }
+
+    /**
+     * Check if the user is an admin
+     */
+    public function isAdmin(): bool
+    {
+        return $this->userable_type === Admin::class;
+    }
+
+    /**
+     * Check if the user is a client
+     */
+    public function isClient(): bool
+    {
+        return $this->userable_type === Client::class;
+    }
 
 
     /**

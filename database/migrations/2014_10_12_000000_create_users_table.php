@@ -18,11 +18,16 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('telephone')->nullable();
             $table->string('adresse')->nullable();
-            $table->enum('role', ['Admin', 'Client'])->default('Client');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->morphs('userable');
             $table->rememberToken();
             $table->timestamps();
+
+            // Index pour optimiser les recherches
+            $table->index('nom');
+            $table->index('prenom');
+            $table->index('telephone');
         });
     }
 
